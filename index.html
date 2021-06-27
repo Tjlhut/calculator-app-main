@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- displays site properly based on user's device -->
+
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="./images/favicon-32x32.png"
+    />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Spartan:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./theme-1.css" id="theme-link" />
+    <title>Frontend Mentor | Calculator app</title>
+
+    <!-- Feel free to remove these styles or customise in your own stylesheet 👍 -->
+  </head>
+  <body>
+    <div class="calculator">
+      <header>
+        <div class="title">calc</div>
+
+        <div class="theme">
+          <div class="theme-title">THEME</div>
+          <div class="theme-selector">
+            <div class="options">
+              <div class="theme-1">1</div>
+              <div class="theme-2">2</div>
+              <div class="theme-3">3</div>
+            </div>
+            <div class="selector">
+              <div class="circle"></div>
+            </div>
+          </div>
+        </div>
+      </header>
+      <div class="input">
+        <div class="operation">
+          <div class="operand-box"></div>
+          <div class="operator-box"></div>
+        </div>
+        <form action="">
+          <input type="text" class="input-box" />
+        </form>
+      </div>
+
+      <div class="buttons-box">
+        <div class="row">
+          <button class="btn btn-com" onclick="append_digit('7')">7</button>
+          <button class="btn btn-com" onclick="append_digit('8')">8</button>
+          <button class="btn btn-com" onclick="append_digit('9')">9</button>
+          <button class="btn btn-del" onclick="delete_digit()">DEL</button>
+        </div>
+        <div class="row">
+          <button class="btn btn-com" onclick="append_digit('4')">4</button>
+          <button class="btn btn-com" onclick="append_digit('5')">5</button>
+          <button class="btn btn-com" onclick="append_digit('6')">6</button>
+          <button class="btn btn-com" onclick="call_operator('+')">+</button>
+        </div>
+        <div class="row">
+          <button class="btn btn-com" onclick="append_digit('1')">1</button>
+          <button class="btn btn-com" onclick="append_digit('2')">2</button>
+          <button class="btn btn-com" onclick="append_digit('3')">3</button>
+          <button class="btn btn-com" onclick="call_operator('-')">-</button>
+        </div>
+        <div class="row">
+          <button class="btn btn-com" onclick="append_decimal()">.</button>
+          <button class="btn btn-com" onclick="append_digit('0')">0</button>
+          <button class="btn btn-com" onclick="call_operator('÷')">÷</button>
+          <button class="btn btn-com" onclick="call_operator('×')">×</button>
+        </div>
+        <div class="row">
+          <button class="btn btn-reset" onclick="reset()">RESET</button>
+          <button class="btn btn-equality" onclick="evaluate_operation()">
+            =
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+
+<script>
+  input_box = document.querySelector(".input-box");
+  operator_box = document.querySelector(".operator-box");
+  operand_box = document.querySelector(".operand-box");
+  theme1_option = document.querySelector(".theme-1");
+  theme2_option = document.querySelector(".theme-2");
+  theme3_option = document.querySelector(".theme-3");
+  selector_box = document.querySelector(".selector");
+  theme = document.querySelector("#theme-link");
+  let theme1 = () => {
+    theme.href = "./theme-1.css";
+  };
+
+  let theme2 = () => {
+    theme.href = "./theme-2.css";
+  };
+
+  let theme3 = () => {
+    theme.href = "./theme-3.css";
+  };
+
+  theme1_option.addEventListener("click", theme1);
+  theme2_option.addEventListener("click", theme2);
+  theme3_option.addEventListener("click", theme3);
+
+  let format_number = (number) => {
+    if (
+      number == "Infinity" ||
+      number == "NaN" ||
+      // If the number is in scientific notation
+      /^-?\d*\.?\d*e\+\d+$/.test(number)
+    ) {
+      return number;
+    }
+    prefix = number[0];
+    if (prefix === "-") {
+      number = number.replace("-", "");
+    } else {
+      prefix = "";
+    }
+
+    // Slice decimal portion then add it back
+    decimal = "";
+    decimal_start_ndx = number.indexOf(".");
+
+    if (decimal_start_ndx != -1) {
+      max_ndx = decimal_start_ndx - 1;
+      decimal = number.slice(decimal_start_ndx);
+    } else {
+      max_ndx = number.length - 1;
+    }
+
+    new_value = "";
+    for (let i = max_ndx; i >= 0; i--) {
+      if ((max_ndx - i) % 3 == 0 && i != max_ndx) {
+        new_value += ",";
+      }
+      new_value += number[i];
+    }
+    return prefix + new_value.split("").reverse().join("") + decimal;
+  };
+
+  let append_decimal = () => {
+    !input_box.value.includes(".") && (input_box.value += ".");
+  };
+  let append_digit = (digit) => {
+    if (input_box.value.includes(".")) {
+      input_box.value += digit;
+      return;
+    }
+    input_box.value = format_number(input_box.value.replace(/,/g, "") + digit);
+  };
+  let delete_digit = () => {
+    if (input_box.value.includes(".")) {
+      input_box.value = input_box.value.slice(0, -1);
+      return;
+    }
+    input_box.value = format_number(
+      input_box.value.replace(/,/g, "").slice(0, -1)
+    );
+  };
+  let reset = () => {
+    input_box.value = "";
+    operator_box.innerHTML = "";
+    operand_box.innerHTML = "";
+  };
+
+  let add_operand = (operand) => {
+    operand_box.innerHTML = operand;
+  };
+  let call_operator = (operator) => {
+    if (
+      /^(-?\d*\.?\d*(e\+)?\d+|Infinity)$/.test(
+        input_box.value.replace(/,/g, "")
+      ) &&
+      operator_box.innerHTML == ""
+    ) {
+      // There must be an operand and no operation must be in progress
+      add_operand(input_box.value);
+      input_box.value = "";
+      operator_box.innerHTML = operator;
+    }
+  };
+
+  let evaluate_operation = () => {
+    operand1 = operand_box.innerHTML;
+    operand2 = input_box.value;
+    operator = operator_box.innerHTML;
+
+    // Remove commas
+    operand1 = operand1.replace(/,/g, "");
+    operand2 = operand2.replace(/,/g, "");
+    // Verify that the operands are numbers
+    regex = /^(-?\d*\.?\d*(e\+)?\d+|Infinity)$/;
+    if (regex.test(operand1) + regex.test(operand2) != 2) {
+      return;
+    }
+
+    // Verify that the operator is indeed a mathematical operator
+    if (!(operator.length === 1 && /[+-×÷]/.test(operator))) {
+      return;
+    }
+
+    if (operator == "÷") {
+      operator = "/";
+    } else if (operator == "×") {
+      operator = "*";
+    }
+    reset();
+    input_box.value = format_number(
+      String(eval(`${operand1} ${operator} ${operand2}`))
+    );
+  };
+
+  // eval(box.value.replace(/,/g, ""))
+</script>
