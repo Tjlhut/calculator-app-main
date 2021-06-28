@@ -12,6 +12,7 @@ body {
 }
 header {
   display: flex;
+  color: white;
   flex-direction: row;
   justify-content: space-between;
   margin-bottom: 2rem;
@@ -22,14 +23,12 @@ header {
 .title {
   padding-top: 1.5rem;
   font-size: 3.2rem;
-  color: white;
 }
 
 .theme {
   display: flex;
   flex-direction: row;
   font-size: 1.2rem;
-  color: white;
 }
 
 .theme-title {
